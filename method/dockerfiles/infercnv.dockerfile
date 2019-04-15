@@ -34,7 +34,7 @@ RUN rm -rf infercnv
 RUN git clone https://github.com/broadinstitute/inferCNV
 WORKDIR inferCNV
 RUN git checkout update-cli
-# Checkout code as of 2019-03-10
+# Checkout code as of 2019-04-15
 RUN git checkout 47e0cb577cde2e80b459ad203e45d9db19ea53bb
 RUN R CMD INSTALL .
 
@@ -47,11 +47,14 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Get script to convert inferCNV outputs to Ideogram.js annotations, then clean
 WORKDIR /
-RUN git clone https://github.com/broadinstitute/single_cell_portal scp
+#RUN git clone https://github.com/broadinstitute/single_cell_portal scp
+RUN git clone https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set
 WORKDIR scp
-RUN git checkout ew-infercnv-beta
-# Checkout code as of 2019-03-10
-RUN git checkout 90f2ec6ef29b05fa122de61ba7dce33756b4d4f5
+#RUN git checkout ew-infercnv-beta
+
+# Checkout code as of 2019-04-15
+#Updated Commit Id
+RUN git checkout 23b45802c481972f0022266f5448b356b431229b
 WORKDIR /
 RUN mkdir -p single_cell_portal/scripts
 RUN mv scp/scripts/ideogram single_cell_portal/scripts/
