@@ -19,7 +19,10 @@ python3 scripts/ideogram/matrix_to_ideogram_annots.py \
 --cluster-names "tSNE" "tSNE_non_malignant_cells" \
 --cluster-paths tsne.txt tsne.non.mal.txt \
 --metadata-path metadata.txt \
---output-dir ./
+--output-dir ./ \
+--organism "Homo sapiens" \ 
+--genome-assembly "GCA_000001405.14" \
+--genome-annotation "ensembl-94"
 
 """
 
@@ -39,7 +42,8 @@ def make_tarfile(output_filename, source_dir):
 class MatrixToIdeogramAnnots:
 
     def __init__(self, matrix_path, matrix_delimiter, gen_pos_file,
-                 cluster_groups, output_dir, heatmap_thresholds_path, ref_group_name):
+                 cluster_groups, output_dir, heatmap_thresholds_path, ref_group_name,
+                 organism, genome_assembly, genome_annotation):
         """Class and parameter docs in module summary and argument parser"""
 
         self.matrix_path = matrix_path
@@ -52,6 +56,9 @@ class MatrixToIdeogramAnnots:
         ht_path = heatmap_thresholds_path
         self.heatmap_thresholds = parse_heatmap_thresholds(ht_path)
         self.ref_group_name = ref_group_name
+        self.organism = organism
+        self.genome_assembly = genome_assembly
+        self.genome_annotation = genome_annotation
 
         self.genes = self.get_genes()
 
@@ -156,7 +163,8 @@ class MatrixToIdeogramAnnots:
 
                     ideogram_annots = {
                         'keys': keys,
-                        'metadata': {'heatmapThresholds': self.heatmap_thresholds},
+                        'metadata': {'organism': self.organism, 'genomeAssembly': self.genome_assembly, 
+                                     'genomeAnnotation': self.genome_annotation, 'heatmapThresholds': self.heatmap_thresholds},
                         'annots': annots_list
                     }
                     ideogram_annots_list.append([group_name, scope, cluster_name, ideogram_annots])
@@ -313,8 +321,14 @@ def create_parser():
                     nargs='+')
     parser.add_argument('--metadata-path',
                     help='Path or URL to metadata file')
-    parser.add_argument('--output-dir',
+    parser.add_argument('--output-dir', 
                     help='Path to write output')
+    parser.add_argument('--organism', required=True,
+                    help='Name of the Organism')
+    parser.add_argument('--genome-assembly', required=True,
+                    help='Name of the genome assembly')
+    parser.add_argument('--genome-annotation', required=True,
+                    help='Name of the genome annotation')
 
     return parser
 
@@ -331,12 +345,16 @@ def convert_matrix_and_write(args):
     cluster_paths = args.cluster_paths
     metadata_path = args.metadata_path
     output_dir = args.output_dir
+    organism = args.organism
+    genome_assembly = args.genome_assembly
+    genome_annotation = args.genome_annotation
 
     clusters_groups = get_cluster_groups(cluster_names, cluster_paths,
         metadata_path, ref_cluster_names=ref_cluster_names, ordered_labels=ordered_labels)
 
     MatrixToIdeogramAnnots(matrix_path, matrix_delimiter, gen_pos_file,
-        clusters_groups, output_dir, heatmap_thresholds_path, ref_group_name)
+        clusters_groups, output_dir, heatmap_thresholds_path, ref_group_name,
+        organism, genome_assembly, genome_annotation)
 
 if __name__ == '__main__':
     args = create_parser().parse_args()
