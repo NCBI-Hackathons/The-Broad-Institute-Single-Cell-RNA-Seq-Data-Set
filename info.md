@@ -17,8 +17,8 @@ https://software.broadinstitute.org/firecloud/documentation/article?id=9846
 https://github.com/broadinstitute/single_cell_portal/wiki/Study-Creation
 
 ### Useful links
-hackathon Single Cell Portal study: To Be Created by Compbio team
-hackathon Terra workspace: To Be Created by Compbio team
+hackathon Single Cell Portal study: To Be Created by Compbio team  
+hackathon Terra workspace: To Be Created by Compbio team  
 DockerHub repo: https://cloud.docker.com/u/bioithackathon/repository/docker/bioithackathon/infercnv  
 Github repo: https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set  
 FairShare entry: https://fairshake.cloud/project/73/  
