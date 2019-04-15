@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Single-cell analysis of cancer | Bio-IT hackathon 2019</title>
+  <style>
+    body {font: 14px Arial; line-height: 19.6px; padding: 0 15px;}
+    a, a:visited {text-decoration: none;}
+    a:hover {text-decoration: underline;}
+    a, a:hover, a:visited, a:active {color: #0366d6;}
+  </style>
+  <script src="https://unpkg.com/ideogram@1.7.0/dist/js/ideogram.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" 
+        onload="this.onload=function(){};handleClientLoad()" 
+        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
+</head>
+<body>
+  <h1>Single-cell analysis of cancer | Bio-IT hackathon 2019</h1>
+  <p>
+  Single-cell RNA-seq can be used to infer copy number variations.  Below, four brain cancer samples show large deletions in chr1p and chr19q, among other cytogenetic abnormalities.
+  </p>
+  <p>
+  <!-- This prototype builds on the <a href="https://portals.broadinstitute.org/single_cell/api/swagger_docs/v1">Single Cell Portal REST API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>, reproducing part of <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">SCP384</a> in <a href="https://reactjs.org/">React</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>. -->
+  This prototype builds on the <a href="https://cloud.google.com/storage/docs/json_api/">Google Cloud Storage API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>, reproducing part of <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">SCP384</a> in <a href="https://reactjs.org/">React</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
+  </p>
+  <button id="sign-in-or-out-button" style="margin-left: 25px">Sign in / Authorize</button>
+  <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
+
+  <script>
+    var GoogleAuth;
+    var SCOPE = 'https://www.googleapis.com/auth/devstorage.read_only';
+    // var scpRestApiRootUrl = 'https://portals.broadinstitute.org/single_cell/api/v1';
+    // var accession = 'SCP384';
+    // var filename = 'outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10%2Fideogram_exp_means__Observations--Sample--group--cluster.json';
+
+    // // hardcodedUrl = 'https://portals.broadinstitute.org/single_cell/api/v1/site/stream_data/SCP384?filename=outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10%2Fideogram_exp_means__Observations--Sample--group--cluster.json';
+    // hardcodedUrl = 'https://localhost/single_cell/api/v1/site/stream_data/SCP54?filename=outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10/ideogram_exp_means__Observations--Sample--group--cluster.json'
+    
+    function handleClientLoad() {
+      // Load the API's client and auth2 modules.
+      // Call the initClient function after the modules load.
+      fetch('config.json').then(response => {
+        response.json().then(data => {
+          window.config = data;
+          gapi.load('client:auth2', initClient);
+        });
+      });
+    }
+  
+    function initClient(clientId) {
+  
+      // Initialize the gapi.client object, which app uses to make API requests.
+      // Get API key and client ID from API Console.
+      // 'scope' field specifies space-delimited list of access scopes.
+      gapi.client.init({
+          // This clientId is for  the Single Cell Portal (localhost) project in Google Cloud Platform.
+          'clientId': window.config.googleClientId,
+          'scope': SCOPE
+      }).then(function () {
+        GoogleAuth = gapi.auth2.getAuthInstance();
+  
+        // Listen for sign-in state changes.
+        GoogleAuth.isSignedIn.listen(updateSigninStatus);
+  
+        // Handle initial sign-in state. (Determine if user is already signed in.)
+        var user = GoogleAuth.currentUser.get();
+        setSigninStatus();
+  
+        // Call handleAuthClick function when user clicks on
+        //      "Sign In/Authorize" button.
+        $('#sign-in-or-out-button').click(function() {
+          handleAuthClick();
+        }); 
+        $('#revoke-access-button').click(function() {
+          revokeAccess();
+        }); 
+      });
+    }
+  
+    function handleAuthClick() {
+      if (GoogleAuth.isSignedIn.get()) {
+        // User is authorized and has clicked 'Sign out' button.
+        GoogleAuth.signOut();
+      } else {
+        // User is not signed in. Start Google auth flow.
+        GoogleAuth.signIn();
+      }
+    }
+  
+    function revokeAccess() {
+      GoogleAuth.disconnect();
+    }
+
+    function initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl) {
+      ideoConfig = {
+        organism: 'human',
+        assembly: 'GRCh37',
+        orientation: 'horizontal',
+        chrHeight: 80,
+        chrMargin: 10,
+        showBandLabels: false,
+        legend: legend,
+        // heatmapThresholds: [0, 0.13, 0.27, 0.4, 0.53, 0.67, 0.8, 0.93, 1.1, 1.2, 1.33, 1.47, 1.6, 1.73, 1.87, 2],
+        annotationHeight: 30,
+        accessToken: googleCloudAccessToken,
+        annotationsLayout: 'heatmap',
+        annotationsPath: googleCloudObjectUrl,
+        geometry: 'collinear'
+      }
+
+      ideogram = new Ideogram(ideoConfig);
+    }
+
+    function setSigninStatus(isSignedIn) {
+      var user = GoogleAuth.currentUser.get();
+      var isAuthorized = user.hasGrantedScopes(SCOPE);
+      if (isAuthorized) {
+        googleCloudAccessToken = user.getAuthResponse().access_token;
+        // googleCloudObjectUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2foligodendroglioma_expression_downsampled.counts.matrix.txt?alt=media'
+        googleCloudObjectUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
+        initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl);
+        // fetch(scpRestApiRootUrl + '/studies/stream_data/' + accession + '?filename=' + filename, {
+        // fetch(hardcodedUrl, {
+        //   headers: new Headers({
+        //     'Authorization': 'Bearer ' + scpAccessToken,
+        //     'Accept': 'application/json',
+        //   }),
+        //   // mode: 'no-cors'
+        // })
+        //   .then(response => {
+        //     if (response.ok === false) {
+        //       console.error('Response not OK.  Status code: ' + response.status);
+        //       return;
+        //     }
+        //     response.json().then(data => {
+        //       var googleCloudToken = data.access_token;
+        //       var googleCloudObjectUrl = data.url;
+
+        //       initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl)
+        //     });
+        //   })
+        //   .catch(error => console.error('Error: ' + error));
+
+        $('#sign-in-or-out-button').html('Sign out');
+        $('#revoke-access-button').css('display', 'inline-block');
+        $('#auth-status').html('You are currently signed in and have granted ' +
+            'access to this app.');
+      } else {
+        $('#sign-in-or-out-button').html('Sign In / Authorize');
+        $('#revoke-access-button').css('display', 'none');
+        $('#auth-status').html('You have not authorized this app or you are ' +
+            'signed out.');
+      }
+    }
+  
+    function updateSigninStatus(isSignedIn) {
+      setSigninStatus();
+    }
+  </script>
+
+<script type="text/javascript">
+
+  d3 = Ideogram.d3;
+
+  var legend = [{
+    name: 'Expression level',
+    rows: [
+      {name: 'Low', color: '#33F'},
+      {name: 'Normal', color: '#CCC'},
+      {name: 'High', color: '#F33'}
+    ]
+  }];
+
+  config = {
+    organism: 'human',
+    orientation: 'vertical',
+    chromosome: '1',
+    chrHeight: 450,
+    showBandLabels: false
+  }
+
+  ideogram = new Ideogram(config);
+
+</script>
+
+</body>
+</html>
