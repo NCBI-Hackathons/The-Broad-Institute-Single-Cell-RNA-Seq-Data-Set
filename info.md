@@ -10,7 +10,7 @@ https://gatkforums.broadinstitute.org/firecloud/discussion/6816/howto-register-g
 ##### After registering with FireCloud, obtain free credits. Visit https://app.terra.bio/, there should be a banner to apply free credits to your account.  
 Note: Billing account assignments are permanent and cannot be changed. Workspaces and data in a workspace funded by the free Terra credits billing account cannot be transferred to another billing project at a later time.
 
-### How to set up the above using an existing, non-gmail account:
+### How register with FireCloud using an existing, non-gmail account:
 https://software.broadinstitute.org/firecloud/documentation/article?id=9846
 
 ### Useful links
