@@ -13,8 +13,12 @@ Note: Billing account assignments are permanent and cannot be changed. Workspace
 ### How register with FireCloud using an existing, non-gmail account:
 https://software.broadinstitute.org/firecloud/documentation/article?id=9846
 
-### Useful links
+### How to set up a study in Single Cell Portal 
+https://github.com/broadinstitute/single_cell_portal/wiki/Study-Creation
 
+### Useful links
+hackathon Single Cell Portal study: To Be Created by Compbio team
+hackathon Terra workspace: To Be Created by Compbio team
 DockerHub repo: https://cloud.docker.com/u/bioithackathon/repository/docker/bioithackathon/infercnv  
 Github repo: https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set  
 FairShare entry: https://fairshake.cloud/project/73/  
