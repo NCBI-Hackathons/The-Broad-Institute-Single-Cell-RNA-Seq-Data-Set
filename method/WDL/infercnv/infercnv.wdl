@@ -49,9 +49,9 @@ workflow infercnv {
         ref_group_name = ref_group_name,
         metadata_file = metadata_file,
         diskSpace = diskSpace,
-        output_dir = output_dir
-	organism = organism
-	genomeAssembly = genomeAssembly
+        output_dir = output_dir,
+	organism = organism,
+	genomeAssembly = genomeAssembly,
 	genomeAnnotation = genomeAnnotation
     }
 }
