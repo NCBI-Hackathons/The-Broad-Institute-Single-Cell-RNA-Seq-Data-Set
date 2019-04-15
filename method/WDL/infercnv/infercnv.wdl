@@ -13,7 +13,10 @@ workflow infercnv {
     File obs_cluster_file # Path to cluster file containing observation (tumor) cells
     String reference_cell_annotation
     String observation_cell_annotation
-    
+    String organism
+    String genomeAssembly
+    String genomeAnnotation
+        
     call run_infercnv {
     	input:
         matrix_file = matrix_file,
@@ -47,6 +50,9 @@ workflow infercnv {
         metadata_file = metadata_file,
         diskSpace = diskSpace,
         output_dir = output_dir
+	organism = organism
+	genomeAssembly = genomeAssembly
+	genomeAnnotation = genomeAnnotation
     }
 }
 
@@ -118,7 +124,7 @@ task run_infercnv {
 }
 
 task run_matrix_to_ideogram_annots {
-	File matrix_file
+    File matrix_file
     File ref_group_names_file
     File gene_pos_file
     # String cluster_names
@@ -132,7 +138,9 @@ task run_matrix_to_ideogram_annots {
     String output_dir
     String diskSpace
     String ref_group_name
-    
+    String organism
+    String genomeAssembly
+    String genomeAnnotation
     command <<<
         if [ ! -d ${output_dir} ]; then
            mkdir -p ${output_dir}
@@ -149,6 +157,9 @@ task run_matrix_to_ideogram_annots {
             --metadata-path ${metadata_file} \
             --heatmap-thresholds-path ${heatmap_thresholds_file} \
             --output-dir ${output_dir} \
+	    --organism ${organism} \
+	    --genomeAssembly ${genomeAssembly} \
+	    --genomeAnnotation ${genomeAnnotation} \
             --reference-group-name "${ref_group_name}"
     >>>
     
