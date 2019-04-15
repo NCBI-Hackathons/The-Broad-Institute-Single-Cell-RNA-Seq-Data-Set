@@ -2,6 +2,7 @@
 
 ##### Onboarding
 * get added to this github repo
+* join the #singlecell slack channel at bioit-fairhack2019.slack.com
 * if needed, get added to the dockerhub repo
 * if needed, set up a Terra account with free credits (through FireCloud at this time, see below)
 
@@ -17,8 +18,9 @@ https://software.broadinstitute.org/firecloud/documentation/article?id=9846
 https://github.com/broadinstitute/single_cell_portal/wiki/Study-Creation
 
 ### Useful links
-hackathon Single Cell Portal study: To Be Created by Compbio team  
-hackathon Terra workspace: To Be Created by Compbio team  
+Single Cell Portal study for hackathon: To Be Created by Compbio team  
+Terra workspace for hackathon: To Be Created by Compbio team  
+Slack channel for hackathon #singlecell: https://bioit-fairhack2019.slack.com/messages/CHPQENTFG
 DockerHub repo: https://cloud.docker.com/u/bioithackathon/repository/docker/bioithackathon/infercnv  
 Github repo: https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set  
 FairShare entry: https://fairshake.cloud/project/73/  
