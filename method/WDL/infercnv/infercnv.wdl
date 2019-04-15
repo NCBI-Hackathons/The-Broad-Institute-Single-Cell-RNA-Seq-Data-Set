@@ -157,9 +157,9 @@ task run_matrix_to_ideogram_annots {
             --metadata-path ${metadata_file} \
             --heatmap-thresholds-path ${heatmap_thresholds_file} \
             --output-dir ${output_dir} \
-	    --organism ${organism} \
-	    --genome-assembly ${genomeAssembly} \
-	    --genome-annotation ${genomeAnnotation} \
+	    --organism "${organism}" \
+	    --genome-assembly "${genomeAssembly}" \
+	    --genome-annotation "${genomeAnnotation}" \
             --reference-group-name "${ref_group_name}"
     >>>
     
