@@ -16,6 +16,7 @@ workflow infercnv {
     String organism
     String genomeAssembly
     String genomeAnnotation
+    String organ
         
     call run_infercnv {
     	input:
@@ -50,9 +51,10 @@ workflow infercnv {
         metadata_file = metadata_file,
         diskSpace = diskSpace,
         output_dir = output_dir,
-	organism = organism,
-	genomeAssembly = genomeAssembly,
-	genomeAnnotation = genomeAnnotation
+	    organism = organism,
+	    genomeAssembly = genomeAssembly,
+	    genomeAnnotation = genomeAnnotation,
+        organ = organ
     }
 }
 
@@ -113,8 +115,8 @@ task run_infercnv {
     }
 
     runtime {
-    	# https://hub.docker.com/r/singlecellportal/infercnv/tags
-        docker: "singlecellportal/infercnv:0-99-0"
+    	# https://cloud.docker.com/u/bioithackathon/repository/docker/bioithackathon/infercnv/tags
+        docker: "bioithackathon/infercnv:0-99-5_v1"
         memory: "8 GB"
         bootDiskSizeGb: 12
         disks: "local-disk ${diskSpace} HDD"
@@ -141,6 +143,7 @@ task run_matrix_to_ideogram_annots {
     String organism
     String genomeAssembly
     String genomeAnnotation
+    String organ
     command <<<
         if [ ! -d ${output_dir} ]; then
            mkdir -p ${output_dir}
@@ -157,9 +160,10 @@ task run_matrix_to_ideogram_annots {
             --metadata-path ${metadata_file} \
             --heatmap-thresholds-path ${heatmap_thresholds_file} \
             --output-dir ${output_dir} \
-	    --organism "${organism}" \
-	    --genome-assembly "${genomeAssembly}" \
-	    --genome-annotation "${genomeAnnotation}" \
+	        --organism "${organism}" \
+	        --genome-assembly "${genomeAssembly}" \
+	        --genome-annotation "${genomeAnnotation}" \
+            --organ "${organ}" \
             --reference-group-name "${ref_group_name}"
     >>>
     
@@ -171,8 +175,8 @@ task run_matrix_to_ideogram_annots {
   }
 
 	runtime {
-    	# https://hub.docker.com/r/singlecellportal/infercnv/tags
-        docker: "singlecellportal/infercnv:0-99-0"
+    	# https://cloud.docker.com/u/bioithackathon/repository/docker/bioithackathon/infercnv/tags
+        docker: "bioithackathon/infercnv:0-99-5_v1"
         memory: "8 GB"
         bootDiskSizeGb: 12
         disks: "local-disk ${diskSpace} HDD"
