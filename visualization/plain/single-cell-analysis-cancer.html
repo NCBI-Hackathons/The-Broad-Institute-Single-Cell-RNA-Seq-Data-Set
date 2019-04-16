@@ -7,6 +7,7 @@
     a, a:visited {text-decoration: none;}
     a:hover {text-decoration: underline;}
     a, a:hover, a:visited, a:active {color: #0366d6;}
+    button { font-size: 16px;}
   </style>
   <script src="https://unpkg.com/ideogram@1.7.0/dist/js/ideogram.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -16,7 +17,7 @@
   </script>
 </head>
 <body>
-  <h1>Single-cell analysis of cancer | Bio-IT hackathon 2019</h1>
+  <h1><a href="https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set">Single-cell analysis of cancer</a> | Bio-IT hackathon 2019</h1>
   <p>
   Single-cell RNA-seq can be used to infer copy number variations.  Below, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5465819">four brain cancer samples</a> show large deletions in chr1p and chr19q, among other cytogenetic abnormalities.
   </p>
@@ -58,7 +59,12 @@
     if (enableAuth) {
       $('#summary_local_host').css('display', '');
       $('#summary_external_host').css('display', 'none');
+
+      // Old
       annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
+
+      // New
+      annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__observation--Sample--group--cluster.json?alt=media';
     } else {
       // External host, e.g. GitHub Pages
       annotsUrl = 'data/ideogram_exp_means__observation--Sample--group--cluster.json'; 
@@ -140,6 +146,22 @@
       GoogleAuth.disconnect();
     }
 
+    function showMetadata() {
+      console.log('ideogram.rawAnnots.metadata');
+      console.log(ideogram.rawAnnots.metadata);
+      var metadata = ideogram.rawAnnots.metadata;
+      $('#_ideogramLegend').css('height', '90px');
+      $('body').append(
+        '<b>Metadata from annotations JSON:</b>' +
+        '<ul>' +
+            '<li>Organism: ' + metadata.organism + '</li>' +
+            '<li>Genome assembly: ' + metadata.genomeAssembly + '</li>' +
+            '<li>Genome annotation: ' + metadata.genomeAnnotation + '</li>' +
+            '<li>Organ: ' + metadata.organ + '</li>' +
+        '</ul>'
+      );
+    }
+
     function initializeIdeogram(accessToken, annotsUrl) {
 
       ideoConfig = {
@@ -155,6 +177,7 @@
         annotationsLayout: 'heatmap',
         onLoad: monkeyPatchIdeogram,
         annotationsPath: annotsUrl,
+        onDrawAnnots: showMetadata,
         geometry: 'collinear'
       }
 
