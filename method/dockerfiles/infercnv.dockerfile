@@ -52,6 +52,7 @@ RUN git clone https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell
 
 # Checkout code as of 2019-04-15
 #Updated Commit Id
+WORKDIR single_cell_portal
 RUN git checkout master
 RUN git checkout 23b45802c481972f0022266f5448b356b431229b
 WORKDIR /
