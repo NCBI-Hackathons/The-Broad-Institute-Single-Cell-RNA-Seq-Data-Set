@@ -149,6 +149,7 @@
         annotationHeight: 30,
         accessToken: accessToken,
         annotationsLayout: 'heatmap',
+        onLoad: monkeyPatchIdeogram,
         annotationsPath: annotsUrl,
         geometry: 'collinear'
       }
@@ -202,6 +203,18 @@
   
     function updateSigninStatus(isSignedIn) {
       setSigninStatus();
+    }
+
+    // Monkey patch "afterRawAnnots" method in Ideogram to fix black patches in heatmap
+    // TODO: Fix upstream in more refined manner, pull update, remove this patch.
+    function monkeyPatchIdeogram() {
+      originalAfterRawAnnots = ideogram.afterRawAnnots;
+      ideogram.afterRawAnnots = function() {
+        var penultimateThreshold = ideogram.rawAnnots.metadata.heatmapThresholds.slice(-2)[0];
+        // Ensures default heatmap does not show black unexpectedly
+        ideogram.rawAnnots.metadata.heatmapThresholds.splice(-1, 1, penultimateThreshold + 1/10000);
+        originalAfterRawAnnots.apply(this);
+      }
     }
   </script>
 
