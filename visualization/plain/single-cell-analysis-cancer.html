@@ -151,14 +151,17 @@
       console.log(ideogram.rawAnnots.metadata);
       var metadata = ideogram.rawAnnots.metadata;
       $('#_ideogramLegend').css('height', '90px');
+      $('#metadataList').remove();
       $('body').append(
-        '<b>Metadata from annotations JSON:</b>' +
-        '<ul>' +
-            '<li>Organism: ' + metadata.organism + '</li>' +
-            '<li>Genome assembly: ' + metadata.genomeAssembly + '</li>' +
-            '<li>Genome annotation: ' + metadata.genomeAnnotation + '</li>' +
-            '<li>Organ: ' + metadata.organ + '</li>' +
-        '</ul>'
+        '<div id="metadataList">' + 
+          '<b>Metadata from annotations JSON:</b>' +
+          '<ul>' +
+              '<li>Organism: ' + metadata.organism + '</li>' +
+              '<li>Genome assembly: ' + metadata.genomeAssembly + '</li>' +
+              '<li>Genome annotation: ' + metadata.genomeAnnotation + '</li>' +
+              '<li>Organ: ' + metadata.organ + '</li>' +
+          '</ul>' + 
+        '</div>'
       );
     }
 
@@ -219,7 +222,7 @@
         //   .catch(error => console.error('Error: ' + error));
 
         $('#sign-in-or-out-button').html('Sign out');
-        $('#revoke-access-button').css('display', 'inline-block');
+        // $('#revoke-access-button').css('display', 'inline-block');
         $('#auth-status').html('You are currently signed in and have granted access to this app.');
       } else {
         $('#sign-in-or-out-button').html('Sign In / Authorize');
