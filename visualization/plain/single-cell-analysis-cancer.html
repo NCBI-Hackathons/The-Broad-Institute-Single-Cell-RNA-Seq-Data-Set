@@ -25,11 +25,12 @@
   </p>
   <p id="summary_local_host" style="display: none;">
   This prototype reproduces a study in <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">Single Cell Portal</a> using the <a href="https://cloud.google.com/storage/docs/json_api/">Google Cloud Storage API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
-  </p>
+  <br/><br/>
   <button id="sign-in-or-out-button" style="margin-left: 25px">Sign in / Authorize</button>
   <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
   <br/>
   <br/>
+  </p>
 
   <script>
     // This prototype has two modes:
@@ -48,10 +49,15 @@
     var organism = 'human';
     var assembly = 'GRCh37';
     var d3 = Ideogram.d3;
-
+    var annotsUrl;
+  
     if (window.location.hostname === 'localhost') {
       $('#summary_local_host').css('display', '');
       $('#summary_external_host').css('display', 'none');
+      annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
+    } else {
+      // External host, e.g. GitHub Pages
+      annotsUrl = 'data/ideogram_exp_means__observation--Sample--group--cluster.json'; 
     }
 
     var legend = [{
@@ -63,7 +69,6 @@
       ]
     }];
 
-
     // var scpRestApiRootUrl = 'https://portals.broadinstitute.org/single_cell/api/v1';
     // var accession = 'SCP384';
     // var filename = 'outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10%2Fideogram_exp_means__Observations--Sample--group--cluster.json';
@@ -72,14 +77,19 @@
     // hardcodedUrl = 'https://localhost/single_cell/api/v1/site/stream_data/SCP54?filename=outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10/ideogram_exp_means__Observations--Sample--group--cluster.json'
     
     function handleClientLoad() {
-      // Load the API's client and auth2 modules.
-      // Call the initClient function after the modules load.
-      fetch('../config.json').then(response => {
-        response.json().then(data => {
-          window.config = data;
-          gapi.load('client:auth2', initClient);
+
+      if (window.location.hostname === 'localhost') {
+        // Load the API's client and auth2 modules.
+        // Call the initClient function after the modules load.
+        fetch('../config.json').then(response => {
+          response.json().then(data => {
+            window.config = data;
+            gapi.load('client:auth2', initClient);
+          });
         });
-      });
+      } else {
+        initializeIdeogram(null, annotsUrl);
+      }
     }
   
     function initClient(clientId) {
@@ -105,7 +115,7 @@
         //      "Sign In/Authorize" button.
         $('#sign-in-or-out-button').click(function() {
           handleAuthClick();
-        }); 
+        });
         $('#revoke-access-button').click(function() {
           revokeAccess();
         }); 
@@ -126,7 +136,7 @@
       GoogleAuth.disconnect();
     }
 
-    function initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl) {
+    function initializeIdeogram(accessToken, annotsUrl) {
 
       ideoConfig = {
         organism: 'human',
@@ -137,10 +147,14 @@
         showBandLabels: false,
         legend: legend,
         annotationHeight: 30,
-        accessToken: googleCloudAccessToken,
+        accessToken: accessToken,
         annotationsLayout: 'heatmap',
-        annotationsPath: googleCloudObjectUrl,
+        annotationsPath: annotsUrl,
         geometry: 'collinear'
+      }
+
+      if (accessToken !== null) {
+        ideoConfig.accessToken = accessToken;
       }
 
       ideogram = new Ideogram(ideoConfig);
@@ -152,8 +166,8 @@
       if (isAuthorized) {
         googleCloudAccessToken = user.getAuthResponse().access_token;
         // googleCloudObjectUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2foligodendroglioma_expression_downsampled.counts.matrix.txt?alt=media'
-        googleCloudObjectUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
-        initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl);
+        accessToken = googleCloudAccessToken;
+        initializeIdeogram(accessToken, annotsUrl);
         // fetch(scpRestApiRootUrl + '/studies/stream_data/' + accession + '?filename=' + filename, {
         // fetch(hardcodedUrl, {
         //   headers: new Headers({
