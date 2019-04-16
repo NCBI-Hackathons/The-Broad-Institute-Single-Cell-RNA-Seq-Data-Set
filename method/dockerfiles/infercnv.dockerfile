@@ -48,13 +48,20 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 WORKDIR /
 RUN git clone https://github.com/broadinstitute/single_cell_portal scp
 WORKDIR scp
+RUN echo "Newly Forcing Docker Cache!"
+
 RUN git clone https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set single_cell_portal
 
-# Checkout code as of 2019-04-15
+# Checkout code as of 2019-04-16
 #Updated Commit Id
 WORKDIR single_cell_portal
 RUN git checkout master
-RUN git checkout 23b45802c481972f0022266f5448b356b431229b
+
+RUN git checkout fffe60ba3e8767b2299128b08c8cee067981f567
+
+
+##RUN git checkout 23b45802c481972f0022266f5448b356b431229b
+
 WORKDIR /
 RUN mkdir -p single_cell_portal/scripts
 RUN mv scp/scripts/ideogram single_cell_portal/scripts/
