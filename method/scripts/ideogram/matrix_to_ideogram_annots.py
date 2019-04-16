@@ -20,9 +20,10 @@ python3 scripts/ideogram/matrix_to_ideogram_annots.py \
 --cluster-paths tsne.txt tsne.non.mal.txt \
 --metadata-path metadata.txt \
 --output-dir ./ \
---organism "Homo sapiens" \ 
+--organism "Homo sapiens" \
 --genome-assembly "GCA_000001405.14" \
---genome-annotation "ensembl-94"
+--genome-annotation "ensembl-94" \
+--organ "brain"
 
 """
 
@@ -43,7 +44,7 @@ class MatrixToIdeogramAnnots:
 
     def __init__(self, matrix_path, matrix_delimiter, gen_pos_file,
                  cluster_groups, output_dir, heatmap_thresholds_path, ref_group_name,
-                 organism, genome_assembly, genome_annotation):
+                 organism, genome_assembly, genome_annotation, organ):
         """Class and parameter docs in module summary and argument parser"""
 
         self.matrix_path = matrix_path
@@ -59,6 +60,7 @@ class MatrixToIdeogramAnnots:
         self.organism = organism
         self.genome_assembly = genome_assembly
         self.genome_annotation = genome_annotation
+        self.organ = organ
 
         self.genes = self.get_genes()
 
@@ -164,7 +166,8 @@ class MatrixToIdeogramAnnots:
                     ideogram_annots = {
                         'keys': keys,
                         'metadata': {'organism': self.organism, 'genomeAssembly': self.genome_assembly, 
-                                     'genomeAnnotation': self.genome_annotation, 'heatmapThresholds': self.heatmap_thresholds},
+                                     'genomeAnnotation': self.genome_annotation, 'heatmapThresholds': self.heatmap_thresholds,
+                                     'organ': self.organ},
                         'annots': annots_list
                     }
                     ideogram_annots_list.append([group_name, scope, cluster_name, ideogram_annots])
@@ -329,6 +332,7 @@ def create_parser():
                     help='Name of the genome assembly')
     parser.add_argument('--genome-annotation', required=True,
                     help='Name of the genome annotation')
+    parser.add_argument('--organ', help='name of organ. e.g.: brain')
 
     return parser
 
@@ -348,13 +352,14 @@ def convert_matrix_and_write(args):
     organism = args.organism
     genome_assembly = args.genome_assembly
     genome_annotation = args.genome_annotation
+    organ = args.organ
 
     clusters_groups = get_cluster_groups(cluster_names, cluster_paths,
         metadata_path, ref_cluster_names=ref_cluster_names, ordered_labels=ordered_labels)
 
     MatrixToIdeogramAnnots(matrix_path, matrix_delimiter, gen_pos_file,
         clusters_groups, output_dir, heatmap_thresholds_path, ref_group_name,
-        organism, genome_assembly, genome_annotation)
+        organism, genome_assembly, genome_annotation, organ)
 
 if __name__ == '__main__':
     args = create_parser().parse_args()

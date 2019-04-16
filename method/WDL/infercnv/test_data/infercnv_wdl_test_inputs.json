@@ -14,5 +14,6 @@
   "infercnv.metadata_file":"/workflow/test_data/oligodendroglioma_metadata.test.txt",
   "infercnv.organism":"Homo sapiens",
   "infercnv.genomeAssembly":"GCA_000001405.14",
-  "infercnv.genomeAnnotation":"ensembl-94"
+  "infercnv.genomeAnnotation":"ensembl-94",
+  "infercnv.organ":"brain"
 }
