@@ -18,18 +18,52 @@
 <body>
   <h1>Single-cell analysis of cancer | Bio-IT hackathon 2019</h1>
   <p>
-  Single-cell RNA-seq can be used to infer copy number variations.  Below, four brain cancer samples show large deletions in chr1p and chr19q, among other cytogenetic abnormalities.
+  Single-cell RNA-seq can be used to infer copy number variations.  Below, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5465819">four brain cancer samples</a> show large deletions in chr1p and chr19q, among other cytogenetic abnormalities.
   </p>
-  <p>
-  <!-- This prototype builds on the <a href="https://portals.broadinstitute.org/single_cell/api/swagger_docs/v1">Single Cell Portal REST API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>, reproducing part of <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">SCP384</a> in <a href="https://reactjs.org/">React</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>. -->
-  This prototype builds on the <a href="https://cloud.google.com/storage/docs/json_api/">Google Cloud Storage API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>, reproducing part of <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">SCP384</a> in <a href="https://reactjs.org/">React</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
+  <p id="summary_external_host">
+  This prototype reproduces a study in <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">Single Cell Portal</a> using <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
+  </p>
+  <p id="summary_local_host" style="display: none;">
+  This prototype reproduces a study in <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">Single Cell Portal</a> using the <a href="https://cloud.google.com/storage/docs/json_api/">Google Cloud Storage API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
   </p>
   <button id="sign-in-or-out-button" style="margin-left: 25px">Sign in / Authorize</button>
   <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
+  <br/>
+  <br/>
 
   <script>
+    // This prototype has two modes:
+    //
+    //  * Local host: includes authentication and authorization via OAuth2 implicit grant flow.
+    //    Uses non-permanent Google Cloud Platform (GCP) project with non-public credentials to fetch data from Google Cloud Storage (GCS) .
+    //    There is no quick, permanent, and secure way to incorporate auth, so only do if running locally.
+    //    This mode demonstrates a proof-of-concept for client-side-only auth and GCS API usage that can be developed further after hackathon.
+    //
+    //  * External host: lacks auth.
+    //    Uses permanent free hosting (or so we hope) from GitHub Pages and fetches data directly from our GitHub repo.
+    //    This mode enables us to show -- and others to use -- all the other FAIR enhancements made during the hackathon.
+
     var GoogleAuth;
     var SCOPE = 'https://www.googleapis.com/auth/devstorage.read_only';
+    var organism = 'human';
+    var assembly = 'GRCh37';
+    var d3 = Ideogram.d3;
+
+    if (window.location.hostname === 'localhost') {
+      $('#summary_local_host').css('display', '');
+      $('#summary_external_host').css('display', 'none');
+    }
+
+    var legend = [{
+      name: 'Expression level',
+      rows: [
+        {name: 'Low', color: '#33F'},
+        {name: 'Normal', color: '#CCC'},
+        {name: 'High', color: '#F33'}
+      ]
+    }];
+
+
     // var scpRestApiRootUrl = 'https://portals.broadinstitute.org/single_cell/api/v1';
     // var accession = 'SCP384';
     // var filename = 'outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10%2Fideogram_exp_means__Observations--Sample--group--cluster.json';
@@ -93,6 +127,7 @@
     }
 
     function initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl) {
+
       ideoConfig = {
         organism: 'human',
         assembly: 'GRCh37',
@@ -101,7 +136,6 @@
         chrMargin: 10,
         showBandLabels: false,
         legend: legend,
-        // heatmapThresholds: [0, 0.13, 0.27, 0.4, 0.53, 0.67, 0.8, 0.93, 1.1, 1.2, 1.33, 1.47, 1.6, 1.73, 1.87, 2],
         annotationHeight: 30,
         accessToken: googleCloudAccessToken,
         annotationsLayout: 'heatmap',
@@ -144,13 +178,11 @@
 
         $('#sign-in-or-out-button').html('Sign out');
         $('#revoke-access-button').css('display', 'inline-block');
-        $('#auth-status').html('You are currently signed in and have granted ' +
-            'access to this app.');
+        $('#auth-status').html('You are currently signed in and have granted access to this app.');
       } else {
         $('#sign-in-or-out-button').html('Sign In / Authorize');
         $('#revoke-access-button').css('display', 'none');
-        $('#auth-status').html('You have not authorized this app or you are ' +
-            'signed out.');
+        $('#auth-status').html('You have not authorized this app or you are signed out.');
       }
     }
   
@@ -158,31 +190,6 @@
       setSigninStatus();
     }
   </script>
-
-<script type="text/javascript">
-
-  d3 = Ideogram.d3;
-
-  var legend = [{
-    name: 'Expression level',
-    rows: [
-      {name: 'Low', color: '#33F'},
-      {name: 'Normal', color: '#CCC'},
-      {name: 'High', color: '#F33'}
-    ]
-  }];
-
-  config = {
-    organism: 'human',
-    assembly: 'GRCh37',
-    orientation: 'horizontal',
-    geometry: 'collinear',
-    showBandLabels: false
-  }
-
-  ideogram = new Ideogram(config);
-
-</script>
 
 </body>
 </html>
