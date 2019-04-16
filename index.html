@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Single-cell analysis of cancer | Bio-IT hackathon 2019</title>
+  <style>
+    body {font: 14px Arial; line-height: 19.6px; padding: 0 15px;}
+    a, a:visited {text-decoration: none;}
+    a:hover {text-decoration: underline;}
+    a, a:hover, a:visited, a:active {color: #0366d6;}
+    button { font-size: 16px;}
+  </style>
+  <script src="https://unpkg.com/ideogram@1.7.0/dist/js/ideogram.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" 
+        onload="this.onload=function(){};handleClientLoad()" 
+        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  </script>
+</head>
+<body>
+  <h1><a href="https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set">Single-cell analysis of cancer</a> | Bio-IT hackathon 2019</h1>
+  <p>
+  Single-cell RNA-seq can be used to infer copy number variations.  Below, <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5465819">four brain cancer samples</a> show large deletions in chr1p and chr19q, among other cytogenetic abnormalities.
+  </p>
+  <p id="summary_external_host">
+  This prototype reproduces part of a study in <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">Single Cell Portal</a> using <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
+  </p>
+  <p id="summary_local_host" style="display: none;">
+  This prototype reproduces part of a study in <a href="https://portals.broadinstitute.org/single_cell/study/SCP384">Single Cell Portal</a> using the <a href="https://cloud.google.com/storage/docs/json_api/">Google Cloud Storage API</a> to fetch <a href="https://github.com/broadinstitute/inferCNV/wiki">inferCNV</a> workflow output as run on <a href="https://app.terra.bio">Terra</a>.  Visualizations use <a href="https://github.com/eweitz/ideogram">Ideogram.js</a>.
+  <br/><br/>
+  <button id="sign-in-or-out-button" style="margin-left: 25px">Sign in / Authorize</button>
+  <button id="revoke-access-button" style="display: none; margin-left: 25px">Revoke access</button>
+  <br/>
+  <br/>
+  </p>
+
+  <script>
+    // This prototype has two modes:
+    //
+    //  * Local host and short-term (hackathon-only) external host: includes authentication and authorization via OAuth2 implicit grant flow.
+    //    Uses non-permanent Google Cloud Platform (GCP) project with non-public credentials to fetch data from Google Cloud Storage (GCS) .
+    //    There is no quick, permanent, and secure way to incorporate auth, so only do if running locally.
+    //    This mode demonstrates a proof-of-concept for client-side-only auth and GCS API usage that can be developed further after hackathon.
+    //
+    //  * Long-term external host: lacks auth.
+    //    Uses permanent free hosting (or so we hope) from GitHub Pages and fetches data directly from our GitHub repo.
+    //    This mode enables us to show -- and others to use -- all the other FAIR enhancements made during the hackathon.
+
+    var GoogleAuth;
+    var SCOPE = 'https://www.googleapis.com/auth/devstorage.read_only';
+    var organism = 'human';
+    var assembly = 'GRCh37';
+    var d3 = Ideogram.d3;
+    var annotsUrl;
+  
+    var enableAuthOnExternalHost = true;
+
+    var enableAuth = window.location.hostname === 'localhost' || enableAuthOnExternalHost;
+
+    if (enableAuth) {
+      $('#summary_local_host').css('display', '');
+      $('#summary_external_host').css('display', 'none');
+
+      // Old
+      annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
+
+      // New
+      annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__observation--Sample--group--cluster.json?alt=media';
+    } else {
+      // External host, e.g. GitHub Pages
+      annotsUrl = 'data/ideogram_exp_means__observation--Sample--group--cluster.json'; 
+    }
+
+    var legend = [{
+      name: 'Expression level',
+      rows: [
+        {name: 'Low', color: '#33F'},
+        {name: 'Normal', color: '#CCC'},
+        {name: 'High', color: '#F33'}
+      ]
+    }];
+
+    // var scpRestApiRootUrl = 'https://portals.broadinstitute.org/single_cell/api/v1';
+    // var accession = 'SCP384';
+    // var filename = 'outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10%2Fideogram_exp_means__Observations--Sample--group--cluster.json';
+
+    // // hardcodedUrl = 'https://portals.broadinstitute.org/single_cell/api/v1/site/stream_data/SCP384?filename=outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10%2Fideogram_exp_means__Observations--Sample--group--cluster.json';
+    // hardcodedUrl = 'https://localhost/single_cell/api/v1/site/stream_data/SCP54?filename=outputs_5c8ff4ca328cee0a301c4ab9_31c62c2e-342f-4aaf-ab69-bdd30f2fad10/ideogram_exp_means__Observations--Sample--group--cluster.json'
+    
+    function handleClientLoad() {
+
+      if (enableAuth) {
+        // Load the API's client and auth2 modules.
+        // Call the initClient function after the modules load.
+        fetch('https://www.googleapis.com/storage/v1/b/single-cell/o/config.json?alt=media').then(response => {
+          response.json().then(data => {
+            window.config = data;
+            gapi.load('client:auth2', initClient);
+          });
+        });
+      } else {
+        initializeIdeogram(null, annotsUrl);
+      }
+    }
+  
+    function initClient(clientId) {
+  
+      // Initialize the gapi.client object, which app uses to make API requests.
+      // Get API key and client ID from API Console.
+      // 'scope' field specifies space-delimited list of access scopes.
+      gapi.client.init({
+          // This clientId is for  the Single Cell Portal (localhost) project in Google Cloud Platform.
+          'clientId': window.config.googleClientId,
+          'scope': SCOPE
+      }).then(function () {
+        GoogleAuth = gapi.auth2.getAuthInstance();
+  
+        // Listen for sign-in state changes.
+        GoogleAuth.isSignedIn.listen(updateSigninStatus);
+  
+        // Handle initial sign-in state. (Determine if user is already signed in.)
+        var user = GoogleAuth.currentUser.get();
+        setSigninStatus();
+  
+        // Call handleAuthClick function when user clicks on
+        //      "Sign In/Authorize" button.
+        $('#sign-in-or-out-button').click(function() {
+          handleAuthClick();
+        });
+        $('#revoke-access-button').click(function() {
+          revokeAccess();
+        }); 
+      });
+    }
+  
+    function handleAuthClick() {
+      if (GoogleAuth.isSignedIn.get()) {
+        // User is authorized and has clicked 'Sign out' button.
+        GoogleAuth.signOut();
+      } else {
+        // User is not signed in. Start Google auth flow.
+        GoogleAuth.signIn();
+      }
+    }
+  
+    function revokeAccess() {
+      GoogleAuth.disconnect();
+    }
+
+    function showMetadata() {
+      console.log('ideogram.rawAnnots.metadata');
+      console.log(ideogram.rawAnnots.metadata);
+      var metadata = ideogram.rawAnnots.metadata;
+      $('#_ideogramLegend').css('height', '90px');
+      $('#metadataList').remove();
+      $('body').append(
+        '<div id="metadataList">' + 
+          '<b>Metadata from annotations JSON:</b>' +
+          '<ul>' +
+              '<li>Organism: ' + metadata.organism + '</li>' +
+              '<li>Genome assembly: ' + metadata.genomeAssembly + '</li>' +
+              '<li>Genome annotation: ' + metadata.genomeAnnotation + '</li>' +
+              '<li>Organ: ' + metadata.organ + '</li>' +
+          '</ul>' + 
+        '</div>'
+      );
+    }
+
+    function initializeIdeogram(accessToken, annotsUrl) {
+
+      ideoConfig = {
+        organism: 'human',
+        assembly: 'GRCh37',
+        orientation: 'horizontal',
+        chrHeight: 80,
+        chrMargin: 10,
+        showBandLabels: false,
+        legend: legend,
+        annotationHeight: 30,
+        accessToken: accessToken,
+        annotationsLayout: 'heatmap',
+        onLoad: monkeyPatchIdeogram,
+        annotationsPath: annotsUrl,
+        onDrawAnnots: showMetadata,
+        geometry: 'collinear'
+      }
+
+      if (accessToken !== null) {
+        ideoConfig.accessToken = accessToken;
+      }
+
+      ideogram = new Ideogram(ideoConfig);
+    }
+
+    function setSigninStatus(isSignedIn) {
+      var user = GoogleAuth.currentUser.get();
+      var isAuthorized = user.hasGrantedScopes(SCOPE);
+      if (isAuthorized) {
+        googleCloudAccessToken = user.getAuthResponse().access_token;
+        // googleCloudObjectUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2foligodendroglioma_expression_downsampled.counts.matrix.txt?alt=media'
+        accessToken = googleCloudAccessToken;
+        initializeIdeogram(accessToken, annotsUrl);
+        // fetch(scpRestApiRootUrl + '/studies/stream_data/' + accession + '?filename=' + filename, {
+        // fetch(hardcodedUrl, {
+        //   headers: new Headers({
+        //     'Authorization': 'Bearer ' + scpAccessToken,
+        //     'Accept': 'application/json',
+        //   }),
+        //   // mode: 'no-cors'
+        // })
+        //   .then(response => {
+        //     if (response.ok === false) {
+        //       console.error('Response not OK.  Status code: ' + response.status);
+        //       return;
+        //     }
+        //     response.json().then(data => {
+        //       var googleCloudToken = data.access_token;
+        //       var googleCloudObjectUrl = data.url;
+
+        //       initializeIdeogram(googleCloudAccessToken, googleCloudObjectUrl)
+        //     });
+        //   })
+        //   .catch(error => console.error('Error: ' + error));
+
+        $('#sign-in-or-out-button').html('Sign out');
+        // $('#revoke-access-button').css('display', 'inline-block');
+        $('#auth-status').html('You are currently signed in and have granted access to this app.');
+      } else {
+        $('#sign-in-or-out-button').html('Sign In / Authorize');
+        $('#revoke-access-button').css('display', 'none');
+        $('#auth-status').html('You have not authorized this app or you are signed out.');
+      }
+    }
+  
+    function updateSigninStatus(isSignedIn) {
+      setSigninStatus();
+    }
+
+    // Monkey patch "afterRawAnnots" method in Ideogram to fix black patches in heatmap
+    // TODO: Fix upstream in more refined manner, pull update, remove this patch.
+    function monkeyPatchIdeogram() {
+      originalAfterRawAnnots = ideogram.afterRawAnnots;
+      ideogram.afterRawAnnots = function() {
+        var penultimateThreshold = ideogram.rawAnnots.metadata.heatmapThresholds.slice(-2)[0];
+        // Ensures default heatmap does not show black unexpectedly
+        ideogram.rawAnnots.metadata.heatmapThresholds.splice(-1, 1, penultimateThreshold + 1/10000);
+        originalAfterRawAnnots.apply(this);
+      }
+    }
+  </script>
+
+</body>
+</html>
