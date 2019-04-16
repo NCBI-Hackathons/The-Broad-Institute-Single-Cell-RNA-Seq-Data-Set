@@ -48,7 +48,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 WORKDIR /
 RUN git clone https://github.com/broadinstitute/single_cell_portal scp
 WORKDIR scp
-RUN echo "Newly Forcing Docker Cache!"
+
+## Next line is just to trick Docker for Layer Caching
+RUN echo "A Line to Force Docker Cache!"
 
 RUN git clone https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set single_cell_portal
 
@@ -64,8 +66,15 @@ RUN git checkout fffe60ba3e8767b2299128b08c8cee067981f567
 
 WORKDIR /
 RUN mkdir -p single_cell_portal/scripts
+
 RUN mv scp/scripts/ideogram single_cell_portal/scripts/
+#The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/method/scripts/ideogram/
+#RUN mv single_cell_portal/method/scripts/ideogram/matrix_to_ideogram_annots.py single_cell_portal/scripts/ideogram
+
+RUN mv scp/single_cell_portal/method/scripts/ideogram/matrix_to_ideogram_annots.py single_cell_portal/scripts/ideogram
+
 RUN mv scp/scripts/scp_to_infercnv.py single_cell_portal/scripts/
+
 RUN mv scp/WDL/infercnv/* /workflow/
 RUN rm -rf scp
 
