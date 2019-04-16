@@ -61,7 +61,7 @@
       $('#summary_external_host').css('display', 'none');
 
       // Old
-      annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
+      // annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media';
 
       // New
       annotsUrl = 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__observation--Sample--group--cluster.json?alt=media';
@@ -152,17 +152,21 @@
       var metadata = ideogram.rawAnnots.metadata;
       $('#_ideogramLegend').css('height', '90px');
       $('#metadataList').remove();
-      $('body').append(
-        '<div id="metadataList">' + 
-          '<b>Metadata from annotations JSON:</b>' +
-          '<ul>' +
-              '<li>Organism: ' + metadata.organism + '</li>' +
-              '<li>Genome assembly: ' + metadata.genomeAssembly + '</li>' +
-              '<li>Genome annotation: ' + metadata.genomeAnnotation + '</li>' +
-              '<li>Organ: ' + metadata.organ + '</li>' +
-          '</ul>' + 
-        '</div>'
-      );
+      fetch('data/ontology_map.json').then(function(data) {
+        data.json().then(function(ontology) {
+          $('body').append(
+            '<div id="metadataList">' + 
+              '<b>Metadata from annotations JSON:</b>' +
+              '<ul>' +
+                  '<li >Organism: <a href="' + ontology[metadata.organism] + '">' + metadata.organism + '</a></li>' +
+                  '<li>Genome assembly: <a href="' + ontology[metadata.genomeAssembly] + '">' + metadata.genomeAssembly + '</a></li>' +
+                  '<li>Genome annotation: <a href="' + ontology[metadata.genomeAnnotation] + '">' + metadata.genomeAnnotation + '</a></li>' +
+                  '<li>Organ: <a href="' + ontology[metadata.organ] + '">' + metadata.organ + '</a></li>' +
+              '</ul>' + 
+            '</div>'
+          );
+        });
+      })
     }
 
     function initializeIdeogram(accessToken, annotsUrl) {

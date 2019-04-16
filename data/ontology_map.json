@@ -1,0 +1,6 @@
+{
+  "Homo sapiens": "https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606",
+  "GCA_000001405.14": "https://www.ncbi.nlm.nih.gov/assembly/GCA_000001405.14",
+  "ensembl-94": "ftp://ftp.ensembl.org/pub/release-94/gtf/homo_sapiens/Homo_sapiens.GRCh38.94.gtf.gz",
+  "brain": "http://purl.obolibrary.org/obo/UBERON_0002037"
+}
