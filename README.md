@@ -1,4 +1,8 @@
 # The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set
+Single-cell RNA-seq can be used to infer copy number variations (CNVs). Visualizing CNVs can assist in cancer research.
+
+Our [prototype web app](https://ncbi-hackathons.github.io/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/) reproduces part of a study in [Single Cell Portal](https://portals.broadinstitute.org/single_cell/study/SCP384) using the Google Cloud Storage API to fetch [inferCNV](https://github.com/broadinstitute/inferCNV/wiki) workflow output as run on [Terra](https://app.terra.bio/). We implemented authentication and added metadata, implementing FAIR principles of accessibility and interoperability.  Chromosomes were visualized with [Ideogram.js](https://github.com/eweitz/ideogram). 
+
 
 # Live demo
 https://broad.io/single-cell-bioit-2019
