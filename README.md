@@ -3,7 +3,6 @@
 # Live demo
 https://broad.io/single-cell-bioit-2019
 
-=======
 # Slides
 See below or [Google Slides](https://docs.google.com/presentation/d/1_rLk5nQ8HH1nmeTic8R57V-ZJkxs0-Mjkxlr7GQ1dIE/edit?usp=sharing) for our presentation deck.
 
