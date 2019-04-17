@@ -16,7 +16,7 @@ See below or [Google Slides](https://docs.google.com/presentation/d/1_rLk5nQ8HH1
 
 ![](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(4).png)
 
-![https://broad.io/single-cell-bioit-2019](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(5).png)
+[![Click for live demo](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(5).png)](https://broad.io/single-cell-bioit-2019)
 
 ![](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(6).png)
 
