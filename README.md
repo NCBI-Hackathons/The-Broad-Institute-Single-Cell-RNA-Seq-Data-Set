@@ -46,6 +46,6 @@ See below or [Google Slides](https://docs.google.com/presentation/d/1_rLk5nQ8HH1
 
 ![](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(20).png)
 
-# Links of interset
+# See also
 * [Onboarding doc](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/info.md)
 * [FAIRshake assessment](https://fairshake.cloud/project/77/stats/)
