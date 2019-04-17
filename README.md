@@ -47,8 +47,6 @@ See below or [Google Slides](https://docs.google.com/presentation/d/1_rLk5nQ8HH1
 
 ![](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(18).png)
 
-![](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/images/Single-Cell%20Bio-IT%20Hackathon%202019%20(19).png)
-
 # See also
 * [Onboarding doc](https://github.com/NCBI-Hackathons/The-Broad-Institute-Single-Cell-RNA-Seq-Data-Set/blob/master/info.md)
 * [FAIRshake Assessment Report V1](https://fairshake.cloud/project/77/stats/)
