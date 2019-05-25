@@ -21,11 +21,25 @@ class App extends Component {
 class AppIdeogram extends Component {
 
   componentDidMount() {
-    return new Ideogram({
+
+    // TODO: Fix filter.js in Ideogram to remove need for this global variable
+    window.ideogram = new Ideogram({
       organism: 'human',
+      assembly: 'GRCh37',
+      orientation: 'horizontal',
+      chrHeight: 80,
+      chrMargin: 10,
+      showBandLabels: false,
+      // legend: legend,
+      annotationHeight: 30,
+      annotationsLayout: 'heatmap',
       dataDir: 'https://unpkg.com/ideogram@0.13.0/dist/data/bands/native/',
-      container: '#ideo-container'
+      // annotationsPath: 'https://www.googleapis.com/storage/v1/b/single-cell/o/oligodendroglioma%2fideogram_exp_means__Observations--Sample--group--cluster.json?alt=media',
+      annotationsPath: 'data/ideogram_exp_means__observation--Sample--group--cluster.json',
+      geometry: 'collinear'
     });
+
+    return window.ideogram;
   }
 
   render() {
