@@ -1,18 +1,7 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
+body {font: 14px Arial; line-height: 19.6px; padding: 0 15px;}
+a, a:visited {text-decoration: none;}
+a:hover {text-decoration: underline;}
+a, a:hover, a:visited, a:active {color: #0366d6;}
 
 .App-intro {
   font-size: large;
