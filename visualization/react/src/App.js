@@ -4,15 +4,19 @@ import './App.css';
 
 import Ideogram from 'ideogram';
 
+var authButtonStyle = {
+  marginLeft: '25px'
+};
+var revokeButtonStyle = {
+  display: 'none',
+  marginLeft: '25px'
+}
+
+
+
 class App extends Component {
   render() {
-    var authButtonStyle = {
-      marginLeft: '25px'
-    };
-    var revokeButtonStyle = {
-      display: 'none',
-      marginLeft: '25px'
-    }
+
     return (
       <div className="App">
         <header className="App-header">
